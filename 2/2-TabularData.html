@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    </head>
+    <body>
+
+        <!-- YOU NEED A LOCAL SERVER IN ORDER TO RUN THIS.
+        TUTORIAL: https://www.youtube.com/watch?v=FjWbUK2HdCo&list=PLRqwX-V7Uu6Zu_uqEA6NqhLzKLACwU74X&ab_channel=TheCodingTrain -->
+
+        <!-- How to run your own server: 
+        1. restart zhs bc it messes up for some reason: PATH=/bin:/usr/bin:/usr/local/bin:${PATH}
+        2. Confirm this works using ls
+        3. cd to the file you want to open 
+        4. npx http-server in the file 
+        5. Make sure CORS is enabled with --cors 
+        6. Open the http server 
+        7. It should work lol if it doesn't search it up
+        -->
+
+        <!-- CSV (Coma separated value) can be put into tabular 
+        data in JavaScript
+    
+        Data from: https://data.giss.nasa.gov/gistemp/
+        fixing permission error: https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally 
+    
+        response data streams: https://developer.mozilla.org/en-US/docs/Web/API/Response -->
+        
+    <script>
+        getData(); 
+
+        async function getData() {
+            const response = await fetch('NASAData.csv');
+            const data = await response.text(); //Returns a promise that resolves with a text representation of the response body.
+            // console.log(data); // The CSV data that is trandformed into text is logged in the console
+
+
+            // now we are going to parse the data. There are ways to parse data 
+            // non-manually through things like p5, but for this case we are 
+            // going to parse the data manually 
+        
+
+            const table = data.split('\n').slice(1); // remember that \n is a linebreaker
+            table.forEach (elt => { // => is a higher JS function
+            // elt is a variable we defined for each element in the table
+            // more about foreach loops: https://www.w3schools.com/jsref/jsref_forEach.asp
+                const column = elt.split(','); // this is basically saying that a column = each element in the table split by a comma 
+                const year = column[0];
+                const temp = column[1];
+                // for each row, split up the elements by commas
+                console.log(year,temp);
+            });
+            console.log(table);
+
+
+            // About string.prototype.split() --> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split
+            // Everytime to have a line of text in JavaScript, it is a string object 
+            // which has a function called split. This allows you to take any text 
+            // and split it up into different elements of the array.
+
+            // in this case, we don't need the first "year" row for parsing the data
+            // we can easily remove a row with Array.prototype.slice() --> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice
+            // This makes a copy of the array, but you get to choose what portion of the array 
+            // is copied. In this case, we want to copy from index 1 (the second element) to the end. 
+            // this is done on line 45 with .slice(1)
+
+            // the next step is splitting each of the cvs rows into separate fields 
+            // for this case, we only need the year and the difference from the mean temperature
+            // this is done from line 46
+        }
+
+    </script>
+    
+    </body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script> 
+    <!-- connecting to chart.js -->
+    </head>
+    <body>
+
+        <canvas id="chart" width="800" height="400"></canvas>
+
+        
+    <script>
+
+        const xlabels = []; // this is a global variable
+        const ytemps = [];
+        // making these global variables might not be the best way of doing this
+
+        ChartData(); 
+
+        // Here, ChartData() is turned into an async function 
+        // where it waits for the information of getData() and then 
+        // charts the data. This makes the chart only load when the data is available. 
+
+        async function ChartData() {
+            await getData(); 
+            const ctx = document.getElementById('chart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xlabels, // look at line 107 to see how the xlabels is coming into play here
+                    datasets: [{
+                        label: 'Combined Land-Surface Air and Sea-Surface Water Temperature in C°', 
+                        data: ytemps, // look at line 109 to see how the ytemps is coming into play here
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+
+                // beginAtZero: false
+                // This toggles whether the chart y axis starts from 0 or not 
+
+                options: {
+                    scales: {
+                        y: {
+                            ticks: {
+                                // Include a dollar sign in the ticks
+                                callback: function(value, index, ticks) {
+                                    return value + "°";
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /* THIS IS A COPY/PASTE FROM 2 BECAUSE IT IS DEPENDENT ON THE DATA AND PARSING 
+            FROM 2 -->
+    
+            <!-- YOU NEED A LOCAL SERVER IN ORDER TO RUN THIS.
+            TUTORIAL: https://www.youtube.com/watch?v=FjWbUK2HdCo&list=PLRqwX-V7Uu6Zu_uqEA6NqhLzKLACwU74X&ab_channel=TheCodingTrain -->
+    
+            <!-- How to run your own server: 
+            1. restart zhs bc it messes up for some reason: PATH=/bin:/usr/bin:/usr/local/bin:${PATH}
+            2. Confirm this works using ls
+            3. cd to the file you want to open 
+            4. npx http-server in the file 
+            5. Make sure CORS is enabled with --cors 
+            6. Open the http server 
+            7. It should work lol if it doesn't search it up
+            -->
+    
+            <!-- CSV (Coma separated value) can be put into tabular 
+            data in JavaScript
+        
+            Data from: https://data.giss.nasa.gov/gistemp/
+            fixing permission error: https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally 
+        
+            response data streams: https://developer.mozilla.org/en-US/docs/Web/API/Response */
+
+
+        async function getData() {
+            const response = await fetch('NASAData.csv');
+            const data = await response.text(); //Returns a promise that resolves with a text representation of the response body.
+            // console.log(data); // The CSV data that is trandformed into text is logged in the console
+
+
+            // now we are going to parse the data. There are ways to parse data 
+            // non-manually through things like p5, but for this case we are 
+            // going to parse the data manually 
+        
+
+            const table = data.split('\n').slice(1); // remember that \n is a linebreaker
+            table.forEach (elt => { // => is a higher JS function
+            // elt is a variable we defined for each element in the table
+            // more about foreach loops: https://www.w3schools.com/jsref/jsref_forEach.asp
+                const column = elt.split(','); // this is basically saying that a column = each element in the table split by a comma 
+                const year = column[0];
+                xlabels.push(year); // each year column is being pushed into the xlabels const
+                const temp = column[1];
+                ytemps.push(parseFloat(temp) + 14); 
+                // same deal as xlabels
+                // parseFloat turns strings into numbers, since when you parse data into text, 
+                // they are strings. 
+                // we add 14 to the data because that is the global mean surface 
+                // air temperature. This information is found here: https://earthobservatory.nasa.gov/world-of-change/global-temperatures
+                console.log(year,temp);
+            });
+            console.log(table);
+
+
+            // About string.prototype.split() --> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split
+            // Everytime to have a line of text in JavaScript, it is a string object 
+            // which has a function called split. This allows you to take any text 
+            // and split it up into different elements of the array.
+
+            // in this case, we don't need the first "year" row for parsing the data
+            // we can easily remove a row with Array.prototype.slice() --> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice
+            // This makes a copy of the array, but you get to choose what portion of the array 
+            // is copied. In this case, we want to copy from index 1 (the second element) to the end. 
+            // this is done on line 45 with .slice(1)
+
+            // the next step is splitting each of the cvs rows into separate fields 
+            // for this case, we only need the year and the difference from the mean temperature
+            // this is done from line 46
+        }
+
+        // Chart.js --> https://www.chartjs.org/
+        // This is what we're using to draw a chart of the parsed data, 
+        // but there are multiple (and more advanced) ways of drawing a chart. 
+
+    </script>
+    
+    </body>
+</html>
