@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    </head>
+    <body>
+<!-- Convenient copy/pasting for new files -->
+    <!-- 
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    </head>
+    <body>
+        
+    
+    </body>
+</html> 
+-->
+    <!-- 
+
+    https://www.youtube.com/watch?v=tc8DU14qX6I&ab_channel=TheCodingTrain
+    Tutorial
+        
+    https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+    https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+    This is the Fetch documentation 
+    
+    Through Fetch(), you can make an HTTP request. 
+    Much like PHP, you have a GET request and a POST request, through which you can get 
+    information and post information to your own website 
+
+    Steps to do this: 
+    1. Call the fetch() function. In the () you link to a file, whether an 
+    external or internal file. 
+    2. Get a response. The Fect() functions works asynchronously because some time 
+    passes before you get the data. How you get the data is through a PROMISE.
+    The data we work with can be text data, blob (which can be images, arrays, etc),
+    JSON files, etc.
+    3. Complete the data stream and grab the data from the "body", which is where the data
+    actually is besides the metadata.
+    4. Make an element with the data you retrive from 3. In this case, we are making 
+    an <img> element. 
+    -->
+
+        <img src="" id="puppy" style="width: 400px; height: auto;"/>
+
+        <script> 
+            console.log('We are about to see a puppy.');
+
+            // Async and Await are better ways of doing Fetch and Response
+            catchPuppy().then(response => { // you can add THEN whenever you want to do anything
+                console.log('Your code is a success.');
+            }).catch(error => { 
+                console.log('There is an error in the code.');
+                console.error(error)});
+
+            // error trapping is done before the function code, as learnt from class 
+
+            async function catchPuppy() {
+                const response = 
+                await fetch('https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80');
+                const blob = await response.blob();
+                document.getElementById('puppy').src = URL.createObjectURL(blob);
+            }
+            
+            // Fetch and response does the same this as the code above but in a more 
+            // complicated way 
+
+            fetch('https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80')
+            .then(response => {
+                console.log(response);
+                return response.blob(); // this resolves the promise of FETCH
+            }).then(blob => {
+                console.log(blob);
+                document.getElementById('puppy').src = URL.createObjectURL(blob);
+            })
+            .catch(error => {
+                console.log('There is an error in the code.');
+                console.error(error);
+            }); 
+
+            // This is the error trapping in case there is a mispelling. 
+
+            // FETCH only returns a promise, not the image.
+            // THEN you get a response which gives you a console.log 
+            // of the response and a return of the response, which is converted into a blob. 
+            // and then the blocl is console.logged, and with getElementbyID
+            // you put the blob in the inner HTML of the img tag. 
+            // URL.createObjectURL meaning: https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL
+
+
+
+        </script>
+
+    </body>
+</html>
